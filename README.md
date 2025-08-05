@@ -1,6 +1,6 @@
 # 🤖 Engineus Group - Chatbot Automation Repository
 
-![Engineus Group Logo](Engineus.png)
+![Engineus Group Logo](EngineusIcon.png)
 
 Welcome to the official repository of **Engineus Group**, a Spanish startup specializing in cutting-edge chatbot solutions for businesses of all sizes.
 
