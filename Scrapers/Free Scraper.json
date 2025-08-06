@@ -1,0 +1,788 @@
+{
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -120,
+          320
+        ],
+        "id": "223740ee-49ad-4be7-9f0d-acad865070b3",
+        "name": "When clicking ‘Test workflow’"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Eres un asistente de búsqueda en Google Maps diseñado para crear consultas de búsqueda altamente específicas y localizadas.\n\nSe te proporcionará un tipo de negocio y el nombre de una ciudad. Tu tarea es generar una lista completa de consultas de búsqueda incorporando las ciudades y pueblos cercanos de la ciudad indicada.\n\nRequisitos:\n\nUsa el formato: <bussines> + en + <subregión> para cada consulta.\n\nIncluye todas las ciudades y pueblos cercanos. Hasta 10.\n\nAsegúrate de que todas las consultas estén correctamente escritas y capitalizadas.\n\nTu objetivo es cubrir todas las ciudades colindantes de la ciudad para maximizar la precisión y el alcance de la búsqueda.\n\nEjemplo:\nNegocio: Estetica\nCiudad: Granollers\n\nSalida:\nestetica+en+granollers\nestetica+en+mollet+del+valles\nestetica+en+parets+del+valles\nestetica+en+la+roca+del+valles\n... y así sucesivamente, hasta listar todas ciudades cercanas.\n\nTu objetivo es proporcionar una lista completa y exhaustiva para cualquier ciudad y tipo de negocio que se te indique.\nPor favor, crea las consultas de búsqueda para la ciudad {{ $json.City }} y el negocio {{ $json.Business }}.\n\nIMPORTANTE\n\nUsa siempre el signo + en lugar de espacios en las consultas.\n\nDevuelve el resultado en un formato JSON válido, por ejemplo:\n\njson\nCopiar\nEditar\n{\n  \"locations\": [\"estetica+en+granollers\", \"estetica+en+mollet+del+valles\"]\n}",
+          "hasOutputParser": true
+        },
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.5,
+        "position": [
+          200,
+          320
+        ],
+        "id": "a16c744d-de74-4b5a-bde8-339769ecf139",
+        "name": "Basic LLM Chain"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"output\": [\"plumbers+in+chinatown\",\"plumbers+in+westlake\"]\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2,
+        "position": [
+          380,
+          160
+        ],
+        "id": "564d8cd7-229a-4ec6-a58c-686291f1a913",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          220,
+          160
+        ],
+        "id": "6c3f2905-525e-4fb7-9a32-f56ac0727f40",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "6MH8pvK0zGzbLfgG",
+            "name": "CHICA x Engineus Key"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "output.locations",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          60,
+          480
+        ],
+        "id": "4cf151ac-f16b-4ebc-9d50-ef2169047a5c",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5222727f-131b-418e-826d-4f9e5166703d",
+                "name": "output",
+                "value": "={{ $json['output.locations'] }}",
+                "type": "string"
+              },
+              {
+                "id": "3840b137-beca-4463-b0e5-676bb162115a",
+                "name": "location",
+                "value": "={{ $('Edit Fields1').item.json.City }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          200,
+          480
+        ],
+        "id": "803826b9-cbf4-421e-9b62-145de5784bb0",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          700,
+          180
+        ],
+        "id": "bfcd8452-7005-4d10-9303-f0f17fabae6f",
+        "name": "Loop Over Items",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "780c4ae0-34ed-49eb-90f5-363a07dc1e0b",
+                "name": "email",
+                "value": "={{ $json.emails }}",
+                "type": "string"
+              },
+              {
+                "id": "bb6c6ef9-70ba-4cac-ab0d-8bd3c2432b02",
+                "name": "search term",
+                "value": "={{ $('Loop Over Items').item.json.output }}",
+                "type": "string"
+              },
+              {
+                "id": "e46a2626-34c0-4a0b-b5aa-e9997016d890",
+                "name": "location",
+                "value": "={{ $('Loop Over Items').item.json.location }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          1520,
+          300
+        ],
+        "id": "6284519d-450c-49cd-98f8-0ad381b86164",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "maxItems": 5
+        },
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          360,
+          480
+        ],
+        "id": "d1ef0e9a-d775-4c60-bc60-433f9edde14d",
+        "name": "Limit"
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1520,
+          500
+        ],
+        "id": "30f47bc4-e6e3-4083-8bfd-95dd5a2f249f",
+        "name": "Wait",
+        "webhookId": "19cc6ed4-4fe7-485b-b879-c679e4b3374d"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1380,
+          160
+        ],
+        "id": "0eea0a73-2fd2-442d-b9f4-c66a61c58a94",
+        "name": "Wait1",
+        "webhookId": "0fe34756-6e43-4603-8891-5747a9a6500a"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $input.first().json.data\nconst regex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(?!jpeg|jpg|png|gif|webp|svg)[a-zA-Z]{2,}/g\nconst emails = input.match(regex)\nreturn {json: {emails:emails}}"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1660,
+          500
+        ],
+        "id": "cdc96585-ae08-4208-bae1-55ad74c0ebf9",
+        "name": "Extract Emails",
+        "alwaysOutputData": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $input.first().json.data\nconst regex = /https?:\\/\\/[^\\/\\s\"'>]+/g\nconst websites = input.match(regex)\nreturn websites.map(website => ({json:{website}}))"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          700,
+          320
+        ],
+        "id": "dd63d96c-7f78-40f2-ab1c-233bb47def3a",
+        "name": "Extract URLs"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.website }}",
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1360,
+          500
+        ],
+        "id": "bb5b4e7f-d05b-4cde-b2a3-566a43440d72",
+        "name": "Scrape Site",
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a6786c58-424a-409a-b87f-8a7592cb7944",
+                "leftValue": "={{ $json.emails }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "array",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          1520,
+          160
+        ],
+        "id": "5d86cde2-2b5e-46d0-ad56-4d5d1903ad13",
+        "name": "Filter Out Empties"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "bf0a5053-9660-457c-9581-964793bb6d7d",
+                "leftValue": "={{ $json.website }}",
+                "rightValue": "schema",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              },
+              {
+                "id": "9110b9e0-12aa-45cc-bde0-9eda8c10970e",
+                "leftValue": "={{ $json.website }}",
+                "rightValue": "google",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              },
+              {
+                "id": "fb9b6ed6-96a5-4560-ab10-b8a4b9a61a2b",
+                "leftValue": "={{ $json.website }}",
+                "rightValue": "gg",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              },
+              {
+                "id": "10500c0b-cdbd-4816-aba3-df60d69845dc",
+                "leftValue": "={{ $json.website }}",
+                "rightValue": "gstatic",
+                "operator": {
+                  "type": "string",
+                  "operation": "notContains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          880,
+          320
+        ],
+        "id": "c0057103-a782-49ec-b8ea-56d03c49774f",
+        "name": "Filter Google URLs"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2,
+        "position": [
+          1380,
+          300
+        ],
+        "id": "64b8e6c8-f1bb-4665-a516-86d1c9e0bd44",
+        "name": "Remove Duplicates (2)"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2,
+        "position": [
+          700,
+          460
+        ],
+        "id": "db155599-5b09-47b6-90b4-8191850397fd",
+        "name": "Remove Duplicates2"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1200,
+          300
+        ],
+        "id": "3cd58cef-682a-45d9-887e-10f9730bd936",
+        "name": "Loop Over Items3"
+      },
+      {
+        "parameters": {
+          "maxItems": 20
+        },
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1,
+        "position": [
+          880,
+          460
+        ],
+        "id": "fb6da4ab-7a90-4207-9ac7-01afd391d0a9",
+        "name": "Limit1"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "emails",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1680,
+          160
+        ],
+        "id": "788c385e-bbd8-4d91-b70d-b2780da47e38",
+        "name": "Split Out2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5dd87647-6e4f-4a51-98d6-10d4965b5b23",
+                "name": "City",
+                "value": "Granollers",
+                "type": "string"
+              },
+              {
+                "id": "d85aeff3-6a3d-479c-b3a0-01c7d7c33b37",
+                "name": "Business",
+                "value": "Restaurante celiaco",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          60,
+          320
+        ],
+        "id": "71aead76-3b52-40aa-a626-16cc87a795d2",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "content": "# Step-1 \n## Generating targeted search queries covering every neighborhood in selected city.",
+          "height": 660,
+          "width": 720
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -180,
+          0
+        ],
+        "typeVersion": 1,
+        "id": "69526b62-3fd1-4ca0-b074-e6d3e90bae22",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "url": "=https://www.google.com/maps/search/{{ $json.output }}",
+          "options": {
+            "allowUnauthorizedCerts": true,
+            "response": {
+              "response": {
+                "fullResponse": true
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          880,
+          180
+        ],
+        "id": "238cecee-c68a-4363-82a4-9b46ad29cf75",
+        "name": "Scrape Google Maps"
+      },
+      {
+        "parameters": {
+          "content": "# Step-2\n## Visit Google Maps & scrape",
+          "height": 660,
+          "width": 440,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          620,
+          0
+        ],
+        "typeVersion": 1,
+        "id": "e93a489d-ee0d-46b0-8736-6ef1c891a15f",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "# Step-3\n## Visit website and scrape unique emails",
+          "height": 720,
+          "width": 740,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          1120,
+          0
+        ],
+        "typeVersion": 1,
+        "id": "2a64c3e4-33b1-4e1c-9060-daf74a31a575",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## I'm a note \nYou are a Google Maps search assistant designed to create highly specific and localized search queries.\n\nYou will be provided with a business type and a city name in Spain. Your task is to generate a comprehensive list of search queries by incorporating nearby cities or towns around the given city.\n\nRequirements:\n\nUse the format: <business type> + en + <nearby city> for each query.\n\nInclude all relevant nearby cities or towns within reasonable proximity of the specified city.\n\nEnsure proper capitalization and spelling in all search queries.\n\nAim to cover every nearby urban area to maximize search accuracy and reach.\n\nExample:\nBusiness: Panaderías\nCity: Badalona\n\nOutput:\npanaderías+in+sant+adria+de+besòs\npanaderías+in+montgat\npanaderías+in+barcelona\npanaderías+in+sta+coloma+de+gramenet\npanaderías+in+tiana\n... and so on, until all nearby cities are listed.\n\nYour goal is to provide a complete and exhaustive list of search queries using cities near the one provided.\nPlease create search queries in the area surrounding {{ $json.City }} and for the {{ $json.Business }} business.\n\nIMPORTANT\n\nAlways include + signs instead of spaces in the search queries.\n\nOutput in a valid JSON format, for example:\n{\n  \"locations\": [\"panaderías+in+montgat\", \"panaderías+in+sant+adria+de+besòs\"]\n}"
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -180,
+          -180
+        ],
+        "id": "c449ac25-0962-4cee-8cfc-df3429345def",
+        "name": "Sticky Note3"
+      }
+    ],
+    "connections": {
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Scrape Google Maps",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "Extract Emails",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "Filter Out Empties",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract Emails": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract URLs": {
+        "main": [
+          [
+            {
+              "node": "Filter Google URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape Site": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Out Empties": {
+        "main": [
+          [
+            {
+              "node": "Split Out2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Google URLs": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates (2)": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates2": {
+        "main": [
+          [
+            {
+              "node": "Limit1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items3": {
+        "main": [
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Scrape Site",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limit1": {
+        "main": [
+          [
+            {
+              "node": "Loop Over Items3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "node": "Remove Duplicates (2)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Basic LLM Chain",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Scrape Google Maps": {
+        "main": [
+          [
+            {
+              "node": "Extract URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "70e154ff71bb573464cd3c518eda69ab177cc3b4f9d6862d572e35d42bf5425f"
+    }
+  }
