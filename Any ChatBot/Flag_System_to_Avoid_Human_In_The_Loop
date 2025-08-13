@@ -1,0 +1,886 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "updates": [
+            "message"
+          ],
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          -420,
+          100
+        ],
+        "id": "ea12da3a-53e2-4b8a-a189-dcedb4f49049",
+        "name": "Telegram Trigger",
+        "webhookId": "YOUR_TELEGRAM_BOT_WEBHOOK_ID",
+        "credentials": {
+          "telegramApi": {
+            "id": "YOUR_TELEGRAM_BOT_TOKEN",
+            "name": "YOUR_TELEGRAM_BOT_NAME"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "17d422c6-c6b2-4bd6-ae5c-4444a539c1d5",
+                "leftValue": "={{ $json }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "object",
+                  "operation": "notEmpty",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          80,
+          100
+        ],
+        "id": "0da26d35-ad45-4d19-b775-7ea834526fac",
+        "name": "We got this client ?"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 982808818,
+            "mode": "list",
+            "cachedResultName": "UserState",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4/edit#gid=982808818"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Username",
+                "lookupValue": "={{ $json.message.from.username }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          -140,
+          80
+        ],
+        "id": "ecc9ca17-6fc1-4b7a-b878-bff85e66b6e6",
+        "name": "Get User by Username",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YLKsP11SzDkxq3u1",
+            "name": "Google Sheets OAUTH"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 982808818,
+            "mode": "list",
+            "cachedResultName": "UserState",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4/edit#gid=982808818"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Username": "={{ $('Telegram Trigger').item.json.message.chat.username }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Username",
+                "displayName": "Username",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Id",
+                "displayName": "Id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Created_date",
+                "displayName": "Created_date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "State",
+                "displayName": "State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Message State",
+                "displayName": "Message State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          280,
+          240
+        ],
+        "id": "16cbfcdd-63c4-4d0b-b432-8f01811b60ce",
+        "name": "Add User",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YLKsP11SzDkxq3u1",
+            "name": "Google Sheets OAUTH"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json?.State ?  $json?.State : \"none\" }}",
+                      "rightValue": "none",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "4440a381-43e2-4211-9265-b15707dc5d06"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "none"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "id": "012ed71d-022f-40e6-baca-d335fd77157c",
+                      "leftValue": "={{ $json.State }}",
+                      "rightValue": "form",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals",
+                        "name": "filter.operator.equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "form"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          480,
+          80
+        ],
+        "id": "8aeeb566-5ad4-4e07-b77f-84e3ea3c0d81",
+        "name": "Get User State"
+      },
+      {
+        "parameters": {
+          "jsCode": "var clientMessage = $('Telegram Trigger').first().json.message.text;\n\n// Expresión regular: \"Nombre Apellido, Edad\"\nconst regex = /^([A-Z][a-zA-ZÀ-ÿ]+ [A-Z][a-zA-ZÀ-ÿ]+), (\\d{1,2})$/;\n\nfor (const item of $input.all()) {\n  const match = clientMessage.match(regex);\n  if (match) {\n    item.json.isValidFormat = true;\n    item.json.name = match[1]; // Nombre y apellido\n    item.json.age = parseInt(match[2], 10); // Edad como número\n  } else {\n    item.json.isValidFormat = false;\n    item.json.name = null;\n    item.json.age = null;\n  }\n}\n\nreturn $input.all();\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1080,
+          80
+        ],
+        "id": "cba9f249-a446-46b8-8d62-110eb53a26bc",
+        "name": "Validate Message"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "7b8eb695-25ed-41d8-804e-20522915b58b",
+                "leftValue": "={{ $json.isValidFormat }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1260,
+          80
+        ],
+        "id": "18fc0dcd-4566-45e8-87dd-efa2bd69b736",
+        "name": "Is valid format ?"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1520,
+          60
+        ],
+        "id": "f9195fa4-91b5-4030-9bd6-3ab027254da0",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 982808818,
+            "mode": "list",
+            "cachedResultName": "UserState",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4/edit#gid=982808818"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "State": "none",
+              "Message State": "none",
+              "Username": "={{ $json.Username }}"
+            },
+            "matchingColumns": [
+              "Username"
+            ],
+            "schema": [
+              {
+                "id": "Username",
+                "displayName": "Username",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Id",
+                "displayName": "Id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Created_date",
+                "displayName": "Created_date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "State",
+                "displayName": "State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message State",
+                "displayName": "Message State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          1780,
+          60
+        ],
+        "id": "49c2115a-1463-430a-a807-69ed043321b6",
+        "name": "Return to none state at the end",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YLKsP11SzDkxq3u1",
+            "name": "Google Sheets OAUTH"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+          "text": "We got an error! ",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1520,
+          220
+        ],
+        "id": "85b5ce28-8e59-49d8-aa21-9a651b7ea27e",
+        "name": "Message Invalid data",
+        "webhookId": "YOUR_TELEGRAM_BOT_WEBHOOK_ID",
+        "credentials": {
+          "telegramApi": {
+            "id": "YOUR_TELEGRAM_BOT_TOKEN",
+            "name": "YOUR_TELEGRAM_BOT_NAME"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          640,
+          -160
+        ],
+        "id": "986032dc-b27c-426f-a2bc-fcfc29cca157",
+        "name": "We simulate the logic to change the client's state"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 982808818,
+            "mode": "list",
+            "cachedResultName": "UserState",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1U5PeiIJRnxdsfi1YHwemeXsK6iO1Cm6PYo2-qIk_GI4/edit#gid=982808818"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "State": "form",
+              "Message State": "none",
+              "Username": "={{ $json.Username }}"
+            },
+            "matchingColumns": [
+              "Username"
+            ],
+            "schema": [
+              {
+                "id": "Username",
+                "displayName": "Username",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Id",
+                "displayName": "Id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "Created_date",
+                "displayName": "Created_date",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "State",
+                "displayName": "State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Message State",
+                "displayName": "Message State",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.6,
+        "position": [
+          860,
+          -160
+        ],
+        "id": "45b4cc76-e196-49e3-a6a6-14beebd88e25",
+        "name": "Upd clientstate to 'form'",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "YLKsP11SzDkxq3u1",
+            "name": "Google Sheets OAUTH"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+          "text": "Complete this form:\n- Your name: \n- Age: \n\nFormat: John Doe, 42",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          700,
+          480
+        ],
+        "id": "2508022c-1302-4eb0-a6c4-ec01d0e9dccc",
+        "name": "Form Message",
+        "webhookId": "YOUR_TELEGRAM_BOT_WEBHOOK_ID",
+        "credentials": {
+          "telegramApi": {
+            "id": "YOUR_TELEGRAM_BOT_TOKEN",
+            "name": "YOUR_TELEGRAM_BOT_NAME"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## 1. Get User State\nA core workflow in the flag management system that retrieves and maintains the current state of a user within n8n. This process ensures consistent and reliable state tracking for each client, enabling downstream automations to make context-aware decisions. The workflow first attempts to locate the user in the database; if no match is found, the user record is automatically created. If the user already exists, the workflow proceeds to retrieve their stored state for further processing.\n\n### Process overview:\n1.1 **Client retrieval** – Check if the client exists in the database using a unique identifier.\n\n1.2 **Automatic creation** – If no client is found, create a new entry with the necessary default values.\n\n1.3 **State continuity** – If the client exists, fetch the current state and pass it along for subsequent workflow logic.\n\n",
+          "height": 320,
+          "width": 880
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -400,
+          -260
+        ],
+        "id": "e94f1581-ab6b-44b9-b794-1084cc4abe93",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## 2. Change & Validate Client State\nThis section handles state transitions and input validation for the client. Once the user’s current state is retrieved, the workflow can simulate a state change (e.g., moving from none to form). If the expected form data is received, it is validated against pre-defined format rules before continuing. Invalid inputs trigger an immediate Telegram response notifying the client of the error, while valid data proceeds to the next step.\n\n### Process overview:\n\n2.1 **State update** – Change the client’s state to form or another target state depending on the interaction flow.\n\n2.2 **Form validation** – Check if the submitted form matches the required format.\n\n2.3 **Error handling** – If the format is invalid, send a Telegram message with corrective instructions.",
+          "height": 320,
+          "width": 880,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1260,
+          -280
+        ],
+        "id": "5fa9eb60-4456-487a-97c5-f6c78c895f14",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "# SETUP – Get User State (n8n)\n### Below is the minimum configuration required to run the first block of the flags system.\n**1 Incoming trigger (choose one)**:\nAny node that receives messages and provides text plus a unique user identifier will work.\n\n**2 Database template (table “clients”)**\nThe workflow requires a table (or sheet) to store the client’s state. Minimum fields:\n\n",
+          "height": 320,
+          "width": 880,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          320,
+          -660
+        ],
+        "id": "954acfcd-611e-44a4-98a5-c54cad10e145",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## Reference SQL (PostgreSQL)\n```\nCREATE TABLE IF NOT EXISTS clients (\n  Id            VARCHAR(120) PRIMARY KEY,\n  Username      VARCHAR(120) NOT NULL,\n  CreateDate    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),\n  State         VARCHAR(40)  NOT NULL DEFAULT 'none',\n  MessageState  TEXT         NULL\n);\n```\n",
+          "height": 240,
+          "width": 700,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          360,
+          -460
+        ],
+        "id": "11ccd68b-0e69-4cd0-b050-6722c5e7a84c",
+        "name": "Sticky Note3"
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+          "text": "Logic simulator until reaching the form!",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1040,
+          -160
+        ],
+        "id": "52f6b4da-c039-4eed-9243-ac2dcf501a0e",
+        "name": "Simulate Logic",
+        "webhookId": "YOUR_TELEGRAM_BOT_WEBHOOK_ID",
+        "credentials": {
+          "telegramApi": {
+            "id": "YOUR_TELEGRAM_BOT_TOKEN",
+            "name": "YOUR_TELEGRAM_BOT_NAME"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+          "text": "=*You have been registered!* 🥳 \n\n- Name:{{ $('Validate Message').item.json.name }}  \n- Age: {{ $('Validate Message').item.json.age }}",
+          "additionalFields": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          2020,
+          60
+        ],
+        "id": "2e826853-35d2-452c-895b-0246726668b6",
+        "name": "Message Invalid data1",
+        "webhookId": "YOUR_TELEGRAM_BOT_WEBHOOK_ID",
+        "credentials": {
+          "telegramApi": {
+            "id": "YOUR_TELEGRAM_BOT_TOKEN",
+            "name": "YOUR_TELEGRAM_BOT_NAME"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "# 👾 DISCORD CHANNEL \n\n## Join the conversation, share your workflows, and get real support from other automation builders.(pls no Spaghetti nodes) \n\n## 👉 [Join the Community here](https://discord.gg/ZvMuCKDe)\n",
+          "height": 260,
+          "width": 820,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1320,
+          -620
+        ],
+        "id": "bd6d395d-5051-45d2-9111-d02c646e0752",
+        "name": "Sticky Note4"
+      }
+    ],
+    "connections": {
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get User by Username",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "We got this client ?": {
+        "main": [
+          [
+            {
+              "node": "Get User State",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Add User",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get User by Username": {
+        "main": [
+          [
+            {
+              "node": "We got this client ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Add User": {
+        "main": [
+          [
+            {
+              "node": "Get User State",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get User State": {
+        "main": [
+          [
+            {
+              "node": "We simulate the logic to change the client's state",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Validate Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Message": {
+        "main": [
+          [
+            {
+              "node": "Is valid format ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Is valid format ?": {
+        "main": [
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Message Invalid data",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "No Operation, do nothing": {
+        "main": [
+          [
+            {
+              "node": "Return to none state at the end",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Return to none state at the end": {
+        "main": [
+          [
+            {
+              "node": "Message Invalid data1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Message Invalid data": {
+        "main": [
+          [
+            {
+              "node": "Form Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "We simulate the logic to change the client's state": {
+        "main": [
+          [
+            {
+              "node": "Upd clientstate to 'form'",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upd clientstate to 'form'": {
+        "main": [
+          [
+            {
+              "node": "Simulate Logic",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simulate Logic": {
+        "main": [
+          [
+            {
+              "node": "Form Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "70e154ff71bb573464cd3c518eda69ab177cc3b4f9d6862d572e35d42bf5425f"
+    }
+  }
