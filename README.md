@@ -53,7 +53,7 @@ Join our vibrant Discord community where automation enthusiasts, developers, and
 - **Learn from other community members**
 - **Access exclusive templates and resources**
 
-👉 **[Join our Discord Community](https://discord.gg/ZvMuCKDe)**
+👉 **[Join our Discord Community](https://discord.gg/Z48HxJhwKR)**
 
 ## 💡 Our Philosophy
 
@@ -75,7 +75,7 @@ Our automations are built using:
 
 - **Website**: [Coming Soon]
 - **Email**: [Contact us through Discord]
-- **Discord**: [Join our community](https://discord.gg/ZvMuCKDe)
+- **Discord**: [Join our community](https://discord.gg/Z48HxJhwKR)
 
 ## 📄 License
 
